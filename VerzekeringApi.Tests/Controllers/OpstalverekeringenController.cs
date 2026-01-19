@@ -109,6 +109,44 @@ public class OpstalverzekeringenControllerTests
         Assert.That(badRequest!.Value?.ToString(), Does.Contain("beëindigd"));
     }
 
+     [Test]
+    public async Task CreateOpstalverzekering_ReturnsBadRequest_WhenKlantNotActive()
+    {
+        using var db = DbTestUtils.CreateInMemoryDbContext();
+
+        var klant = new Klant
+        {
+            Voornaam = "Tom",
+            Achternaam = "Stop",
+            Geboortedatum = new DateTime(1990, 1, 1),
+            Woonplaats = "Zwolle",
+            BeginDatum = DateTime.Now,
+            EindDatum = DateTime.Now
+        };
+        db.Klanten.Add(klant);
+        await db.SaveChangesAsync();
+
+        var controller = CreateController(db);
+
+        var dto = new CreateOpstalverzekeringDto
+        {
+            PolisNummer = 2002,
+            KlantId = klant.Id,
+            TypeDekking = "Basis",
+            Herbouwwaarde = 100000m,
+            Inboedelwaarde = 20000m,
+            Premie = 20m,
+            Betaaltermijn = "Maandelijks"
+        };
+
+        var result = await controller.CreateOpstalverzekering(dto);
+
+        var badRequest = result as BadRequestObjectResult;
+        Assert.That(badRequest, Is.Not.Null);
+        Assert.That(badRequest!.Value?.ToString(), Does.Contain("beëindigd"));
+    }
+
+
     [Test]
     public async Task GetByPolisNummer_ReturnsOnlyActive()
     {
