@@ -73,7 +73,7 @@ public class OpstalverzekeringenControllerTests
     }
 
     [Test]
-    public async Task CreateOpstalverzekering_ReturnsBadRequest_WhenKlantNotActive()
+    public async Task CreateOpstalverzekering2_ReturnsBadRequest_WhenKlantNotActive()
     {
         using var db = DbTestUtils.CreateInMemoryDbContext();
 
